@@ -44,7 +44,7 @@ myDEX is a decentralized exchange (DEX) smart contract built on the Ethereum blo
 
 2. Deploy the smart contracts:
     ```bash
-    npx hardhat run scripts/deploy.js --network rinkeby
+    npx hardhat run scripts/deploy.js --network sepolia
     ```
 
 ## Usage
