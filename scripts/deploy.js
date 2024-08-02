@@ -6,16 +6,20 @@ async function main() {
   console.log("Deploying contracts with the account:", deployer.address);
 
   const Token = await hre.ethers.getContractFactory("Token");
-  const token = await Token.deploy(1000000);
+  const token1 = await Token.deploy(1000000);
+  const token2 = await Token.deploy(1000000);
 
-  await token.deployed();
-  console.log("Token deployed to:", token.address);
+  await token1.deployed();
+  await token2.deployed();
 
-  const DEX = await hre.ethers.getContractFactory("DEX");
-  const dex = await DEX.deploy(token.address);
+  console.log("Token1 deployed to:", token1.address);
+  console.log("Token2 deployed to:", token2.address);
+
+  const AdvancedDEX = await hre.ethers.getContractFactory("myDEX");
+  const dex = await AdvancedDEX.deploy(token1.address, token2.address);
 
   await dex.deployed();
-  console.log("DEX deployed to:", dex.address);
+  console.log("myDEX deployed to:", dex.address);
 }
 
 main()
