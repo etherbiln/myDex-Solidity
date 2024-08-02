@@ -67,5 +67,5 @@ The owner can adjust the transaction fee by calling the `setFeePercent` function
 
 ### Test Deploy
 
-![Example]("./images/example.png")
+![Example](./images/example.png)
 
