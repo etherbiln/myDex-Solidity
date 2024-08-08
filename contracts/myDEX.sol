@@ -19,8 +19,8 @@ contract myDEX is Ownable {
     function addLiquidity(uint256 _amountToken1, uint256 _amountToken2) external {
         require(_amountToken1 > 0 && _amountToken2 > 0, "Amounts must be greater than 0");
 
-        token1.transferFrom(msg.sender, address(this), _amountToken1);
-        token2.transferFrom(msg.sender, address(this), _amountToken2);
+        require(token1.transferFrom(msg.sender, address(this), _amountToken1));
+        require(token2.transferFrom(msg.sender, address(this), _amountToken2));
 
         totalLiquidityToken1 += _amountToken1;
         totalLiquidityToken2 += _amountToken2;
@@ -28,28 +28,29 @@ contract myDEX is Ownable {
 
     function removeLiquidity(uint256 _amountToken1, uint256 _amountToken2) external onlyOwner {
         require(_amountToken1 <= totalLiquidityToken1 && _amountToken2 <= totalLiquidityToken2, "Not enough liquidity");
-
-        token1.transfer(msg.sender, _amountToken1);
-        token2.transfer(msg.sender, _amountToken2);
+        //
 
         totalLiquidityToken1 -= _amountToken1;
         totalLiquidityToken2 -= _amountToken2;
+
+        require(token1.transfer(msg.sender, _amountToken1));
+        require(token2.transfer(msg.sender, _amountToken2));
     }
 
     function swapToken1ForToken2(uint256 _amountToken1) external {
         require(_amountToken1 > 0, "Amount must be greater than 0");
-
         uint256 amountToken2 = getSwapAmount(_amountToken1, totalLiquidityToken1, totalLiquidityToken2);
         uint256 fee = (amountToken2 * feePercent) / 100;
         amountToken2 -= fee;
 
         require(amountToken2 <= totalLiquidityToken2, "Not enough liquidity");
-
-        token1.transferFrom(msg.sender, address(this), _amountToken1);
-        token2.transfer(msg.sender, amountToken2);
-
-        totalLiquidityToken1 += _amountToken1;
         totalLiquidityToken2 -= amountToken2;
+        totalLiquidityToken1 += _amountToken1;
+        //totalLiquidityToken2 -= amountToken2;
+
+        require(token1.transferFrom(msg.sender, address(this), _amountToken1));
+        require(token2.transfer(msg.sender, amountToken2));
+
     }
 
     function swapToken2ForToken1(uint256 _amountToken2) external {
@@ -61,11 +62,11 @@ contract myDEX is Ownable {
 
         require(amountToken1 <= totalLiquidityToken1, "Not enough liquidity");
 
-        token2.transferFrom(msg.sender, address(this), _amountToken2);
-        token1.transfer(msg.sender, amountToken1);
-
         totalLiquidityToken2 += _amountToken2;
         totalLiquidityToken1 -= amountToken1;
+
+        require(token2.transferFrom(msg.sender, address(this), _amountToken2));
+        require(token1.transfer(msg.sender, amountToken1));
     }
 
     function getSwapAmount(uint256 inputAmount, uint256 inputReserve, uint256 outputReserve) public pure returns (uint256) {
